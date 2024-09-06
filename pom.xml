@@ -14,10 +14,10 @@
         <!-- Old guava version to avoid conflicts with hbase which also uses guava -->
         <guava.version>14.0</guava.version>
         <slf4j.version>1.7.21</slf4j.version>
-        <logback.version>1.1.8</logback.version>
+        <logback.version>1.2.13</logback.version>
         <!--<log4j.version>2.7</log4j.version>-->
         <!--<slf4j-log4j12.version>1.6.1</slf4j-log4j12.version>-->
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <mockito-all.version>1.10.19</mockito-all.version>
         <maven.compiler.version>3.5</maven.compiler.version>
         <maven.source.version>2.4</maven.source.version>
