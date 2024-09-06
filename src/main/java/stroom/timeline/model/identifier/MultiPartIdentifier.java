@@ -17,13 +17,12 @@
 
 package stroom.timeline.model.identifier;
 
-import org.apache.hadoop.hbase.util.Bytes;
-
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  * Class for representing a complex multi-part identifier such as when you
@@ -31,78 +30,83 @@ import java.util.stream.StreamSupport;
  * BatchNo:IdInBatch then they should be provided to the constructor in the
  * order outer -&gt; inner to ensure correct ordering in the Timeline.
  * Despite the name it will support a single identifier.
- * Currently supported types are: String, Long, Integer, Double, Float, BigDecimal.
+ * Currently supported types are: String, Long, Integer, Double, Float,
+ * BigDecimal.
  */
-public class MultiPartIdentifier implements SequentialIdentifierProvider<Object[]> {
+public class MultiPartIdentifier
+    implements SequentialIdentifierProvider<Object[]> {
 
-    private final Object[] values;
+  private final Object[] values;
 
-    //hold the byte form to save re-computing it all the time
-    private  byte[] bValues = null;
+  // hold the byte form to save re-computing it all the time
+  private byte[] bValues = null;
 
-    public MultiPartIdentifier(Object... values) {
-        if (values == null || values.length == 0){
-            String valuesStr = values == null ? "NULL" : toHumanReadable();
-            throw new IllegalArgumentException(String.format("values %s must contain at least one element", valuesStr));
-        }
-        this.values = values;
+  public MultiPartIdentifier(Object... values) {
+    if (values == null || values.length == 0) {
+      String valuesStr = values == null ? "NULL" : toHumanReadable();
+      throw new IllegalArgumentException(String.format(
+          "values %s must contain at least one element", valuesStr));
     }
+    this.values = values;
+  }
 
-    private byte[] buildBytes(){
-        byte[][] byteArrayChunks = new byte[values.length][];
+  private byte[] buildBytes() {
+    byte[][] byteArrayChunks = new byte[values.length][];
 
-        int i = 0;
-        int len = 0;
-        for (Object value : values){
-            byte[] chunk;
-            if (value instanceof String){
-                chunk = Bytes.toBytes(String.class.cast(value));
-            } else if (value instanceof Integer){
-                chunk = Bytes.toBytes(Integer.class.cast(value));
-            } else if (value instanceof Long){
-                chunk = Bytes.toBytes(Long.class.cast(value));
-            } else if (value instanceof Float){
-                chunk = Bytes.toBytes(Float.class.cast(value));
-            } else if (value instanceof Double){
-                chunk = Bytes.toBytes(Double.class.cast(value));
-            } else if (value instanceof BigDecimal) {
-                chunk = Bytes.toBytes(BigDecimal.class.cast(value));
-            } else {
-                throw new IllegalArgumentException(String.format("The type %s for value %s is not supported", value.getClass().getName(), value));
-            }
-            byteArrayChunks[i++] = chunk;
-            len += chunk.length;
-        }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(len);
-
-        for (byte[] chunk : byteArrayChunks){
-            byteBuffer.put(chunk);
-        }
-        return byteBuffer.array();
+    int i = 0;
+    int len = 0;
+    for (Object value : values) {
+      byte[] chunk;
+      if (value instanceof String) {
+        chunk = Bytes.toBytes(String.class.cast(value));
+      } else if (value instanceof Integer) {
+        chunk = Bytes.toBytes(Integer.class.cast(value));
+      } else if (value instanceof Long) {
+        chunk = Bytes.toBytes(Long.class.cast(value));
+      } else if (value instanceof Float) {
+        chunk = Bytes.toBytes(Float.class.cast(value));
+      } else if (value instanceof Double) {
+        chunk = Bytes.toBytes(Double.class.cast(value));
+      } else if (value instanceof BigDecimal) {
+        chunk = Bytes.toBytes(BigDecimal.class.cast(value));
+      } else {
+        throw new IllegalArgumentException(
+            String.format("The type %s for value %s is not supported",
+                          value.getClass().getName(), value));
+      }
+      byteArrayChunks[i++] = chunk;
+      len += chunk.length;
     }
+    ByteBuffer byteBuffer = ByteBuffer.allocate(len);
 
-    @Override
-    public byte[] getBytes() {
-        if (bValues == null){
-            bValues = buildBytes();
-        }
-        return bValues;
+    for (byte[] chunk : byteArrayChunks) {
+      byteBuffer.put(chunk);
     }
+    return byteBuffer.array();
+  }
 
-    @Override
-    public String toHumanReadable() {
-        return StreamSupport.stream(Arrays.spliterator(values),false)
-                .map(val -> val.toString())
-                .collect(Collectors.joining(":"));
+  @Override
+  public byte[] getBytes() {
+    if (bValues == null) {
+      bValues = buildBytes();
     }
+    return bValues;
+  }
 
-    @Override
-    public Object[] getValue() {
-        return values;
-    }
+  @Override
+  public String toHumanReadable() {
+    return StreamSupport.stream(Arrays.spliterator(values), false)
+        .map(val -> val.toString())
+        .collect(Collectors.joining(":"));
+  }
 
-    @Override
-    public String toString() {
-        return toHumanReadable();
-    }
+  @Override
+  public Object[] getValue() {
+    return values;
+  }
+
+  @Override
+  public String toString() {
+    return toHumanReadable();
+  }
 }

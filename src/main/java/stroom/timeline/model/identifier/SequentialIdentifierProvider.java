@@ -23,24 +23,25 @@ package stroom.timeline.model.identifier;
  */
 public interface SequentialIdentifierProvider<T> {
 
-    /**
-     * @return The sequence number as a byte array. The identifier needs
-     * to be converted into bytes in such a way that if idB &gt; idB then
-     * idB.getBytes() &gt; idA.getBytes() lexicographically.
-     *
-     * Also the byte[] representation of the identifier should ideally
-     * be as compact as possible.
-     */
-    byte[] getBytes();
+  /**
+   * @return The sequence number as a byte array. The identifier needs
+   * to be converted into bytes in such a way that if idB &gt; idB then
+   * idB.getBytes() &gt; idA.getBytes() lexicographically.
+   *
+   * Also the byte[] representation of the identifier should ideally
+   * be as compact as possible.
+   */
+  byte[] getBytes();
 
-    /**
-     * @return A human readbale representation of the identifier
-     */
-    String toHumanReadable();
+  /**
+   * @return A human readbale representation of the identifier
+   */
+  String toHumanReadable();
 
-    /**
-     * @return The actual identifier object, which could be anyting from tha boxed primitive
-     * to a complex structure
-     */
-    T getValue();
+  /**
+   * @return The actual identifier object, which could be anyting from tha boxed
+   *     primitive
+   * to a complex structure
+   */
+  T getValue();
 }
